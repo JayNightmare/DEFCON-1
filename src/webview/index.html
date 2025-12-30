@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+        <head>
+                <meta charset="UTF-8" />
+                <meta
+                        name="viewport"
+                        content="width=device-width, initial-scale=1.0"
+                />
+                <title>DEFCON 1 Settings</title>
+                <style>
+                        body {
+                                font-family: var(--vscode-font-family);
+                                background-color: var(
+                                        --vscode-editor-background
+                                );
+                                color: var(--vscode-editor-foreground);
+                                padding: 20px;
+                        }
+                        .card {
+                                background: var(
+                                        --vscode-editor-lineHighlightBackground
+                                );
+                                padding: 15px;
+                                margin-bottom: 10px;
+                                border-radius: 5px;
+                        }
+                        .row {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                margin-bottom: 10px;
+                        }
+                        input[type="number"] {
+                                background: var(--vscode-input-background);
+                                border: 1px solid var(--vscode-input-border);
+                                color: var(--vscode-input-foreground);
+                                padding: 5px;
+                                width: 60px;
+                        }
+                        input[type="color"] {
+                                border: none;
+                                width: 40px;
+                                height: 30px;
+                                cursor: pointer;
+                        }
+                        button {
+                                background: var(--vscode-button-background);
+                                color: var(--vscode-button-foreground);
+                                border: none;
+                                padding: 10px 20px;
+                                cursor: pointer;
+                        }
+                        button:hover {
+                                background: var(
+                                        --vscode-button-hoverBackground
+                                );
+                        }
+                        h2 {
+                                border-bottom: 1px solid
+                                        var(--vscode-foreground);
+                                padding-bottom: 5px;
+                        }
+                </style>
+        </head>
+        <body>
+                <h1>DEFCON 1 Configuration</h1>
+
+                <div class="card">
+                        <h2>Targets</h2>
+                        <div class="row">
+                                <label>Title Bar</label
+                                ><input
+                                        title="Title Bar"
+                                        type="checkbox"
+                                        id="target-titleBar"
+                                />
+                        </div>
+                        <div class="row">
+                                <label>Status Bar</label
+                                ><input
+                                        title="Status Bar"
+                                        type="checkbox"
+                                        id="target-statusBar"
+                                />
+                        </div>
+                        <div class="row">
+                                <label>Activity Bar</label
+                                ><input
+                                        title="Activity Bar"
+                                        type="checkbox"
+                                        id="target-activityBar"
+                                />
+                        </div>
+                </div>
+
+                <div id="levels-container">
+                        <!-- Levels will be injected here -->
+                </div>
+
+                <button id="save-btn">Save Settings</button>
+
+                <script>
+                        const vscode = acquireVsCodeApi();
+                        const levelsContainer =
+                                document.getElementById("levels-container");
+                        const saveBtn = document.getElementById("save-btn");
+
+                        const levelNames = [
+                                "defcon5",
+                                "defcon4",
+                                "defcon3",
+                                "defcon2",
+                                "defcon1",
+                        ];
+                        const levelLabels = [
+                                "DEFCON 5 (Low)",
+                                "DEFCON 4",
+                                "DEFCON 3",
+                                "DEFCON 2",
+                                "DEFCON 1 (High)",
+                        ];
+
+                        let currentSettings = {
+                                targets: {
+                                        titleBar: true,
+                                        statusBar: true,
+                                        activityBar: true,
+                                },
+                                levels: {},
+                        }; // Default safe state
+
+                        // Notify extension we are ready
+                        vscode.postMessage({ command: "ready" });
+
+                        window.addEventListener("message", (event) => {
+                                const message = event.data;
+                                if (message.command === "loadSettings") {
+                                        if (message.settings) {
+                                                currentSettings =
+                                                        message.settings;
+                                                render();
+                                        }
+                                }
+                        });
+
+                        function render() {
+                                // Targets
+                                if (currentSettings.targets) {
+                                        document.getElementById(
+                                                "target-titleBar"
+                                        ).checked =
+                                                currentSettings.targets.titleBar;
+                                        document.getElementById(
+                                                "target-statusBar"
+                                        ).checked =
+                                                currentSettings.targets.statusBar;
+                                        document.getElementById(
+                                                "target-activityBar"
+                                        ).checked =
+                                                currentSettings.targets.activityBar;
+                                }
+
+                                // Levels
+                                levelsContainer.innerHTML = "";
+                                if (currentSettings.levels) {
+                                        levelNames.forEach((name, index) => {
+                                                const config =
+                                                        currentSettings.levels[
+                                                                name
+                                                        ];
+                                                const div =
+                                                        document.createElement(
+                                                                "div"
+                                                        );
+                                                div.className = "card";
+                                                div.innerHTML = `
+                            <div class="row">
+                                <strong>${levelLabels[index]}</strong>
+                            </div>
+                            <div class="row">
+                                <label>Threshold (Eq/LT)</label>
+                                <input type="number" value="${config.threshold}" onchange="updateLevel('${name}', 'threshold', this.value)">
+                            </div>
+                            <div class="row">
+                                <label>Color</label>
+                                <input type="color" value="${config.color}" onchange="updateLevel('${name}', 'color', this.value)">
+                            </div>
+                        `;
+                                                levelsContainer.appendChild(
+                                                        div
+                                                );
+                                        });
+                                }
+                        }
+
+                        window.updateLevel = (name, key, value) => {
+                                if (key === "threshold")
+                                        value = parseInt(value);
+                                if (!currentSettings.levels[name])
+                                        currentSettings.levels[name] = {};
+                                currentSettings.levels[name][key] = value;
+                        };
+
+                        saveBtn.addEventListener("click", () => {
+                                if (!currentSettings.targets)
+                                        currentSettings.targets = {};
+                                currentSettings.targets.titleBar =
+                                        document.getElementById(
+                                                "target-titleBar"
+                                        ).checked;
+                                currentSettings.targets.statusBar =
+                                        document.getElementById(
+                                                "target-statusBar"
+                                        ).checked;
+                                currentSettings.targets.activityBar =
+                                        document.getElementById(
+                                                "target-activityBar"
+                                        ).checked;
+
+                                vscode.postMessage({
+                                        command: "updateSettings",
+                                        settings: currentSettings,
+                                });
+
+                                // Show feedback
+                                const originalText = saveBtn.innerText;
+                                saveBtn.innerText = "Saved!";
+                                setTimeout(() => {
+                                        saveBtn.innerText = originalText;
+                                }, 2000);
+                        });
+                </script>
+        </body>
+</html>

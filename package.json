@@ -1,0 +1,91 @@
+{
+        "name": "defcon-1",
+        "displayName": "DEFCON 1",
+        "description": "watch your errors, because your theme is",
+        "version": "0.0.1",
+        "engines": {
+                "vscode": "^1.104.0"
+        },
+        "categories": [
+                "Other"
+        ],
+        "activationEvents": [
+                "*",
+                "onCommand:defcon1.openSettings"
+        ],
+        "main": "./out/extension.js",
+        "contributes": {
+                "commands": [
+                        {
+                                "command": "defcon1.openSettings",
+                                "title": "DEFCON 1: Open Settings Panel"
+                        }
+                ],
+                "menus": {
+                        "commandPalette": [
+                                {
+                                        "command": "defcon1.openSettings",
+                                        "when": "editorFocus"
+                                }
+                        ]
+                },
+                "configuration": {
+                        "type": "object",
+                        "title": "DEFCON 1",
+                        "properties": {
+                                "defcon1.settings": {
+                                        "type": "object",
+                                        "default": {
+                                                "targets": {
+                                                        "titleBar": true,
+                                                        "statusBar": true,
+                                                        "activityBar": true
+                                                },
+                                                "levels": {
+                                                        "defcon5": {
+                                                                "threshold": 0,
+                                                                "color": "#16825d"
+                                                        },
+                                                        "defcon4": {
+                                                                "threshold": 2,
+                                                                "color": "#007acc"
+                                                        },
+                                                        "defcon3": {
+                                                                "threshold": 5,
+                                                                "color": "#cca700"
+                                                        },
+                                                        "defcon2": {
+                                                                "threshold": 10,
+                                                                "color": "#D08770"
+                                                        },
+                                                        "defcon1": {
+                                                                "threshold": 9999,
+                                                                "color": "#BF616A"
+                                                        }
+                                                }
+                                        },
+                                        "description": "Configuration for DEFCON 1 levels and targets"
+                                }
+                        }
+                }
+        },
+        "scripts": {
+                "vscode:prepublish": "npm run compile",
+                "compile": "tsc -p ./",
+                "watch": "tsc -watch -p ./",
+                "pretest": "npm run compile && npm run lint",
+                "lint": "eslint src",
+                "test": "vscode-test"
+        },
+        "devDependencies": {
+                "@types/vscode": "^1.104.0",
+                "@types/mocha": "^10.0.9",
+                "@types/node": "20.x",
+                "@typescript-eslint/eslint-plugin": "^8.10.0",
+                "@typescript-eslint/parser": "^8.7.0",
+                "eslint": "^9.13.0",
+                "typescript": "^5.6.3",
+                "@vscode/test-cli": "^0.0.10",
+                "@vscode/test-electron": "^2.4.1"
+        }
+}
