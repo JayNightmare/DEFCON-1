@@ -32,11 +32,3 @@ DEFCON 1 is a visual monitoring extension that drastically changes your workspac
 This extension contributes the following settings (managed via the panel):
 
 - `defcon1.settings`: Stores your custom thresholds, colors, and target preferences.
-
-## Release Notes
-
-### 0.0.1
-
-- Initial release with dynamic error monitoring.
-- Added Customization Panel.
-- Added Status Bar indicator.
