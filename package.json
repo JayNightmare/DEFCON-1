@@ -2,7 +2,7 @@
     "name": "defcon-1",
     "displayName": "DEFCON 1",
     "description": "watch your errors, because your theme is",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "engines": {
         "vscode": "^1.104.0"
     },
@@ -12,6 +12,9 @@
         "url": "https://github.com/JayNightmare/defcon-1.git"
     },
     "publisher": "JayNightmare",
+    "author": "JayNightmare",
+    "homepage": "https://github.com/JayNightmare/defcon-1",
+    "icon": "images/defcon1.png",
     "categories": [
         "Other"
     ],
